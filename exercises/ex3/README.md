@@ -1,63 +1,42 @@
 # Exercise 3 - Tabular AI Orchestration
 
-In this exercise, you will learn how to use our Tabular AI Orchestration capabilities to connect your data source directly to the SAP-RPT model. There are 3 sub-exercises to follow along. 
+In this exercise, you will learn how to set up the Tabular AI orchestration workflow to run predictions with the SAP-RPT-1.6 model at scale. We will be reusing the same dataset from Exercise 1. 
 
-## Exercise 3.1 Set up your data destination
-
-After completing these steps you will have created...
-
-1. Click here.
-<br>![]()
-
-2.	Insert this line of code.
-```abap
-response->set_text( |Hello ABAP World! | ). 
-```
-
-
-
-## Exercise 3.2 Set up the configuration for Tabular Orchestration
-
-After completing these steps you will have...
-
-1.	Enter this code.
-```abap
-DATA(lt_params) = request->get_form_fields(  ).
-READ TABLE lt_params REFERENCE INTO DATA(lr_params) WITH KEY name = 'cmd'.
-  IF sy-subrc = 0.
-    response->set_status( i_code = 200
-                     i_reason = 'Everything is fine').
-    RETURN.
-  ENDIF.
+Tabular AI Orchestration has three components:
 
 ```
-
-2.	Click here.
-<br>![]()
-
-
-
-
-## Exercise 3.3 Get model predictions with Tabular Orchestration
-
-After completing these steps you will have...
-
-1.	Enter this code.
-```abap
-DATA(lt_params) = request->get_form_fields(  ).
-READ TABLE lt_params REFERENCE INTO DATA(lr_params) WITH KEY name = 'cmd'.
-  IF sy-subrc = 0.
-    response->set_status( i_code = 200
-                     i_reason = 'Everything is fine').
-    RETURN.
-  ENDIF.
-
+Your App
+   |
+   v
+Tabular Orchestration  <-- single endpoint
+   |              |
+   v              v
+Context        SAP-RPT
+Selector       (model of your choice)
+   |
+Context Registry
+(your registered dataset)
 ```
 
-2.	Click here.
-<br>![]()
+## Exercise 3.1 Set up Tabular AI Orchestration
+
+After completing these steps, you will uploaded the dataset to HANA Data Lake File system and you will also have created:
+1. A data destination
+2. A tabular artifact
+3. A scenario configuration
+
+Now, you are ready to try running the workflow and obtain predictions from the SAP-RPT model.
+
+
+## Exercise 3.2 Live Predictions with Tabular AI Orchestration
+
+Note: Tabular AI orchestration has already been deployed for you. Simply use the provided deployment ID to start running predictions.
+
+After completing these steps, you will have:
+1. 
+2. 
+3. 
 
 ## Summary
 
-You've now ...
-
+Great, you've now completed all the exercises. 
