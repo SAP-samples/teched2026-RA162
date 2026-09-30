@@ -9,32 +9,37 @@ The [Reuse Tool](https://reuse.software/) must be used for your samples project.
 3. The README.md file (this file):
 Please edit this file as it is the primary description file for your project. You can find some placeholder titles for sections below.
 
-# Session ID - Session Title
+# RA162 - 
 
 ## Description
 
-This repository contains the material for the SAP TechEd 2026 session called Session ID - Session Title.  
+This repository contains the material for the SAP TechEd 2026 session called RA162 - Session Title.  
 
 ## Overview
 
-This session introduces attendees to...
+This session introduces attendees to Tabular AI capabilities, comprising of our tabular foundation models and Tabular AI orchestration. Tabular foundation models include SAP-RPT-1.6 (the latest from our SAP-RPT model family) as well as TabPFN-3.5 (the latest from the TabPFN model family). 
+
+Through each exercise, attendees will get hands-on to learn more about our state-of-the-art tabular foundation models as well as to get a feel of how to operate these models at scale via Tabular AI orchestration.
 
 ## Requirements
 
-The requirements to follow the exercises in this repository are...
+For the Hands-on session, we designed the exercise with the provided AI Core instance and technical user. If you would like to repeat this tutorial, you will require your own AI Core instance (and AI Launchpad). For Exercise 3, you will require your own HANA Data Lake File System or S3 storage. 
 
 ## Exercises
 
 Provide the exercise content here directly in README.md using [markdown](https://guides.github.com/features/mastering-markdown/) and linking to the specific exercise pages, below is an example.
 
 - [Getting Started](exercises/ex0/)
-- [Exercise 1 - First Exercise Description](exercises/ex1/)
+- [Exercise 1 - SAP-RPT](exercises/ex1/)
     - [Exercise 1.1 - Exercise 1 Sub Exercise 1 Description](exercises/ex1#exercise-11-sub-exercise-1-description)
     - [Exercise 1.2 - Exercise 1 Sub Exercise 2 Description](exercises/ex1#exercise-12-sub-exercise-2-description)
-- [Exercise 2 - Second Exercise Description](exercises/ex2/)
+- [Exercise 2 - TabPFN](exercises/ex2/)
     - [Exercise 2.1 - Exercise 2 Sub Exercise 1 Description](exercises/ex2#exercise-21-sub-exercise-1-description)
     - [Exercise 2.2 - Exercise 2 Sub Exercise 2 Description](exercises/ex2#exercise-22-sub-exercise-2-description)
-
+- [Exercise 3 - Tabular Orchestration](exercises/ex2/)
+    - [Exercise 3.1 - Set up your data destination](exercises/ex2#exercise-21-sub-exercise-1-description)
+    - [Exercise 3.2 - Set up the configuration for Tabular Orchestration](exercises/ex2#exercise-22-sub-exercise-2-description)
+    - [Exercise 3.3 - Get model predictions with Tabular Orchestration](exercises/ex2#exercise-22-sub-exercise-2-description)
   
 **OR** Link to the Tutorial Navigator for example...
 
