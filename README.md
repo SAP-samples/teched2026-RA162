@@ -9,11 +9,11 @@ The [Reuse Tool](https://reuse.software/) must be used for your samples project.
 3. The README.md file (this file):
 Please edit this file as it is the primary description file for your project. You can find some placeholder titles for sections below.
 
-# RA162 - 
+# RA162 - SAP-RPT and TabPFN: Get started with tabular foundation models
 
 ## Description
 
-This repository contains the material for the SAP TechEd 2026 session called RA162 - Session Title.  
+This repository contains the material for the SAP TechEd 2026 session called RA162 - SAP-RPT and TabPFN: Get started with tabular foundation models.  
 
 ## Overview
 
@@ -23,7 +23,7 @@ Through each exercise, attendees will get hands-on to learn more about our state
 
 ## Requirements
 
-For the Hands-on session, we designed the exercise with the provided AI Core instance and technical user. If you would like to repeat this tutorial, you will require your own AI Core instance (and AI Launchpad). For Exercise 3, you will require your own HANA Data Lake File System or S3 storage. 
+For the Hands-on session, we have designed the exercise with the provided AI Core instance and technical user. If you would like to repeat this tutorial, you will require your own AI Core instance (and AI Launchpad). For Exercise 3, you will require your own HANA Data Lake File System or S3 storage. 
 
 ## Exercises
 
@@ -31,20 +31,14 @@ Provide the exercise content here directly in README.md using [markdown](https:/
 
 - [Getting Started](exercises/ex0/)
 - [Exercise 1 - SAP-RPT](exercises/ex1/)
-    - [Exercise 1.1 - Exercise 1 Sub Exercise 1 Description](exercises/ex1#exercise-11-sub-exercise-1-description)
-    - [Exercise 1.2 - Exercise 1 Sub Exercise 2 Description](exercises/ex1#exercise-12-sub-exercise-2-description)
 - [Exercise 2 - TabPFN](exercises/ex2/)
     - [Exercise 2.1 - Exercise 2 Sub Exercise 1 Description](exercises/ex2#exercise-21-sub-exercise-1-description)
     - [Exercise 2.2 - Exercise 2 Sub Exercise 2 Description](exercises/ex2#exercise-22-sub-exercise-2-description)
-- [Exercise 3 - Tabular Orchestration](exercises/ex2/)
-    - [Exercise 3.1 - Set up your data destination](exercises/ex2#exercise-21-sub-exercise-1-description)
-    - [Exercise 3.2 - Set up the configuration for Tabular Orchestration](exercises/ex2#exercise-22-sub-exercise-2-description)
-    - [Exercise 3.3 - Get model predictions with Tabular Orchestration](exercises/ex2#exercise-22-sub-exercise-2-description)
+- [Exercise 3 - Tabular Orchestration](exercises/ex3/)
+    - [Exercise 3.1 - Set up your data destination](exercises/ex3#exercise-31-sub-exercise-1-description)
+    - [Exercise 3.2 - Set up the configuration for Tabular Orchestration](exercises/ex2#exercise-32-sub-exercise-3-description)
+    - [Exercise 3.3 - Get model predictions with Tabular Orchestration](exercises/ex2#exercise-32-sub-exercise-3-description)
   
-**OR** Link to the Tutorial Navigator for example...
-
-Start the exercises [here](https://developers.sap.com/tutorials/abap-environment-trial-onboarding.html).
-
 **IMPORTANT**
 
 Your repo must contain the .reuse and LICENSES folder and the License section below. DO NOT REMOVE the section or folders/files. Also, remove all unused template assets(images, folders, etc) from the exercises folder. 
