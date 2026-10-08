@@ -29,5 +29,5 @@ BASE_DEPLOYMENT_URL
 RPT1.6_DEPLOYMENT_ID
 ```
 
-Once you have all creditals set up, you can start in the [Jupyter Notebook](RPT_notebook_TechEd2026.ipynb)
+Once you have all creditals set up, you can start in the [Jupyter Notebook part (1)](RPT_notebook_TechEd2026_part1_prediction.ipynb) which focusses on the core functionalities of the RPT model. Afterwards, you may start the [Jupyter Notebook party (2)](RPT_notebook_TechEd2026_part2_explainability.ipynb) which focusses on the explanibility feature.
 
