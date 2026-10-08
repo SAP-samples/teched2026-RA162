@@ -27,7 +27,6 @@ After completing these steps, you will have uploaded the dataset to HANA Data La
 
 Now, you are ready to try running the workflow and obtain predictions from the SAP-RPT model.
 
-
 ## Exercise 3.2 - Live Predictions with Tabular AI Orchestration (Run Time Steps)
 
 Note: Tabular AI orchestration has already been deployed for you. Simply use the provided deployment ID to start running predictions during the session. If you would like to repeat this on your own setup, we have provided a code block that you can use (currently greyed out).
@@ -36,4 +35,4 @@ After completing these steps, you will have successfully obtained model predicti
 
 ## Summary
 
-Great, you've now completed all the exercises. 
+Great, you have now completed all the exercises for Tabular AI.
