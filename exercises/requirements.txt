@@ -1,0 +1,5 @@
+matplotlib
+requests
+seaborn
+scikit-learn
+tqdm

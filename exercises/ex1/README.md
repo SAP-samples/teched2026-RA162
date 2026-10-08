@@ -19,7 +19,7 @@ In this exercise, we will create run SAP-RPT-1.6 with some sample data. You will
 
 ## Requirements
 
-Access credentials to AI Core is required. In particular, the following credentials are needed.
+Access credentials to AI Core are required. In particular, the following credentials are needed.
 ```
 AICORE_AUTH_URL
 AICORE_CLIENT_ID

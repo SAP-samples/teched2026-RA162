@@ -1,42 +1,91 @@
-# Exercise 2 - Exercise 2 Description
+# Exercise 2 — TabPFN-3.5 Plus
 
-In this exercise, we will create...
+Predict Miami house prices with TabPFN-3.5 Plus through SAP AI Core, compare with a naïve median and XGBoost, then repeat with your own CSV. The [notebook](TabPFN_notebook_TechEd2026.ipynb) keeps the workflow concise; request handling and baseline implementations live in [helpers.py](helpers.py).
 
-## Exercise 2.1 Sub Exercise 1 Description
+## Requirements
 
-After completing these steps you will have created...
+- Python 3.10 or later and JupyterLab.
+- Internet access for the first dataset download and SAP requests.
+- SAP AI Core OAuth credentials and a **running TabPFN-3.5 Plus deployment**, as described in [Exercise 0](../ex0/README.md).
 
-1. Click here.
-<br>![](/exercises/ex2/images/02_01_0010.png)
+From this repository's root:
 
-2.	Insert this line of code.
-```abap
-response->set_text( |Hello ABAP World! | ). 
+```bash
+cd exercises/ex2
+python -m pip install -r requirements.txt
+cp .env.example .env
+jupyter lab TabPFN_notebook_TechEd2026.ipynb
 ```
 
+Fill in `.env` before running the SAP prediction cell:
 
-
-## Exercise 2.2 Sub Exercise 2 Description
-
-After completing these steps you will have...
-
-1.	Enter this code.
-```abap
-DATA(lt_params) = request->get_form_fields(  ).
-READ TABLE lt_params REFERENCE INTO DATA(lr_params) WITH KEY name = 'cmd'.
-  IF sy-subrc = 0.
-    response->set_status( i_code = 200
-                     i_reason = 'Everything is fine').
-    RETURN.
-  ENDIF.
-
+```dotenv
+AICORE_AUTH_URL=https://YOUR_AUTH_HOST/oauth/token
+AICORE_CLIENT_ID=YOUR_CLIENT_ID
+AICORE_CLIENT_SECRET=YOUR_CLIENT_SECRET
+AICORE_RESOURCE_GROUP=default
+BASE_DEPLOYMENT_URL=https://YOUR_AI_CORE_HOST/v2/inference/deployments
+TABPFN_DEPLOYMENT_ID=YOUR_TABPFN_3_5_PLUS_DEPLOYMENT_ID
 ```
 
-2.	Click here.
-<br>![](/exercises/ex2/images/02_02_0010.png)
+Use the resource group containing your deployment. The helper combines the base URL with the deployment ID. Keep credentials in `.env`, which is ignored by Git. The notebook uses SAP authentication; it does not require a Prior Labs API token or a local GPU. You can run data preparation and the baselines without SAP credentials.
 
-## Summary
+## Exercise 2.1 - Predict Miami house prices
 
-You've now ...
+Open the notebook and run its cells in order:
 
-Continue to - [Exercise 3 - Excercise 3 ](../ex3/README.md)
+1. Download the Miami housing dataset automatically on first use; subsequent runs use the local `miami_housing.csv` cache.
+2. Choose `SALE_PRC`, the sale price in US dollars, as the target. The dataset contains 13,776 rows and 15 input features; its parcel identifier has already been removed.
+3. Hold out 20% of rows with seed 42 and select 2,048 context rows from training data.
+4. Fit the median and XGBoost baselines on that same context.
+5. Send context and test features to the SAP TabPFN deployment.
+6. Compare MAE, MAPE (%), and RMSE, then inspect the largest errors.
+7. Request 10th/50th/90th quantiles, plot central 80% predictive intervals, and visualize the full predictive distribution for one test home.
+
+All methods use the same labelled context and held-out rows. XGBoost's preprocessing is fitted only on context data; its 300-tree configuration is fixed rather than tuned on the test set. TabPFN receives the original feature values. The 2,048-row context is a workshop setting, not the model's maximum capacity. Requests follow the [SAP TabPFN-3.5 Plus documentation](https://help.sap.com/docs/sap-ai-core/generative-ai/tabpfn-3-5-plus).
+
+MAE and RMSE are in US dollars; MAPE is displayed as a percentage. Zero targets are excluded from MAPE, which is undefined if every target is zero. Predictive intervals describe model uncertainty and do not guarantee empirical coverage. The full-output plot displays probability mass per bin and zooms to the central 99% of mass to keep extreme tail boundaries from hiding the distribution.
+
+The random split illustrates the workflow. For a real valuation application, consider a chronological or geographic split and verify that each feature was available at the valuation date.
+
+## Exercise 2.2 - Try your own dataset
+
+Change these three values in the notebook's configuration cell:
+
+```python
+CSV_PATH = Path("my_data.csv")
+TARGET_COLUMN = "sales"
+DROP_COLUMNS = ["record_id", "revenue_after_sale"]
+```
+
+Use a numeric target and list columns that identify rows, reveal the answer, or become available only after prediction. Set `DROP_COLUMNS = []` if none apply. Re-run from that cell: splitting, baselines, TabPFN predictions, the metric table and error inspection all adapt to your dataset.
+
+For time-dependent data, set `SORT_COLUMN` to your observation date; the notebook parses it as a date, holds out the latest rows, and selects the latest context rows before the cutoff. For repeated entities, use a group-aware split instead of the default random split. The final optional notebook section covers **classification** with its own baselines and metrics.
+
+Missing targets are reported and removed; invalid or infinite targets raise an error. Missing feature values are handled by the helpers. Increase `MAX_CONTEXT_ROWS` to explore how more labelled examples affect accuracy, keeping within your deployment's documented limits. Use a validation set for tuning and keep the test set for the final comparison.
+
+## Data source and attribution
+
+The notebook downloads [Miami housing, OpenML dataset 46942, version 3](https://www.openml.org/search?type=data&id=46942). The data source lists the license as **CC BY-NC-SA**. The downloaded CSV is cached locally and excluded from Git; it is not distributed under this repository's code license.
+
+Reference: Bourassa, Steven C., et al. “Big data, accessibility and urban house prices.” *Urban Studies* 58(15), 2021, pp. 3176–3195. [DOI: 10.1177/0042098020982508](https://doi.org/10.1177/0042098020982508).
+
+## Optional: website phishing classification
+
+The notebook ends with a three-class website phishing example: **Legitimate**, **Phishy**, and **Suspicious**. It compares the majority-class baseline, XGBoost and SAP TabPFN using accuracy, balanced accuracy and macro F1, then displays a confusion matrix. Identical feature patterns stay in the same split to avoid train/test overlap; the seed is 42.
+
+To try your own classification CSV, change `CLASSIFICATION_CSV`, `CLASSIFICATION_TARGET`, and `CLASSIFICATION_DROP_COLUMNS` in that section. All three models use the same context rows. The helpers support string or numeric class labels and categorical or numeric features.
+
+Data: [OpenML dataset 46963, version 1](https://www.openml.org/search?type=data&id=46963), 1,353 rows and nine features, **CC BY 4.0**, derived from [UCI Website Phishing](https://doi.org/10.24432/C5B301). The local CSV cache is excluded from Git.
+
+Reference: Abdelhamid, Neda, Aladdin Ayesh, and Fadi Thabtah. “Phishing detection based associative classification data mining.” *Expert Systems with Applications* 41(13), 2014, pp. 5948–5959. [DOI: 10.1016/j.eswa.2014.03.019](https://doi.org/10.1016/j.eswa.2014.03.019).
+
+## Additional material
+
+[Prediction_Notebook](additional_material/Prediction_Notebook.ipynb) is a self-contained, prediction-only notebook for Miami housing and website phishing. It builds and prints the request bodies and prints five predictions per dataset, without importing `helpers.py`.
+
+## Instructor validation
+
+Run all notebook cells on a CPU worker with the SAP credentials configured. The inspection copy retains live outputs; the student notebook has cleared outputs.
+
+Continue to [Exercise 3 — Tabular orchestration](../ex3/README.md).
