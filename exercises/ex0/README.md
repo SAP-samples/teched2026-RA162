@@ -20,18 +20,37 @@ Mac: python3 -m venv venv
 
 You should see that a `venv` folder is created in the root directory. 
 
-Run the following command to activate the local environment
+Run the following command to activate the virtual environment.
 ```
 Windows: venv\Scripts\activate
 Mac: source venv/bin/activate
 ```
 
-Once the local environment is up, install the required libraries using the provided `requirements.txt` file.
+Once the virtual environment is up, install the required libraries using the provided `requirements.txt` file.
 ```
+cd exercises
 pip install -r requirements.txt
 ```
 
-## Familiarise yourself with SAP generative AI hub
+## Preparing the .env file
+
+You should see a `.env.example` file. Rename the file to `.env` and open this file. You would see that we have already prepared some environment variables in the file:
+```
+AICORE_AUTH_URL=<url in RA162-SK.json file>/oauth/token
+AICORE_CLIENT_ID=<clientid in RA162-SK.json file>
+AICORE_CLIENT_SECRET=<clientsecret in RA162-SK.json file>
+AICORE_RESOURCE_GROUP=default
+AICORE_BASE_URL=<AI_API_URL in RA162-SK.json file>
+RPT_DEPLOYMENT_ID=YOUR_SAP_RPT_1.6_DEPLOYMENT_ID
+TABPFN_DEPLOYMENT_ID=YOUR_TABPFN_3_5_PLUS_DEPLOYMENT_ID
+TABORC_DEPLOYMENT_ID=YOUR_TAB_ORCHESTRATION_DEPLOYMENT_ID
+TABORC_HDLFS_HOST=<hdlfs-host in RA162-SK.json file>
+TABORC_HDLFS_URL=<hdlfs-url in RA162-SK.json file>
+```
+
+Unzip `credentials.zip` file and open the `RA162-SK.json` file. Copy the required values from this JSON file into your `.env` file.
+
+# Familiarise yourself with SAP generative AI hub
 
 Follow the steps in the [Initial Setup](https://help.sap.com/docs/sap-ai-core/sap-ai-core-service-guide/initial-setup?locale=en-US&ai=true) guide to provision an AI Core instance.
 
