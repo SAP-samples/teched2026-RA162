@@ -4,9 +4,32 @@ To access our tabular foundation models (SAP-RPT models, TabPFN models), there a
 1. Via direct API call to each model (Exercises 1 and 2)
 2. Via API call to the Tabular AI orchestration workflow (Exercise 3)
 
-You can head directly to [Exercise 1 - SAP-RPT-1.6](../ex1/README.md) to get started with our exercises.
+You can head directly to [Exercise 1 - SAP-RPT-1.6](../ex1/README.md) to get started with our exercises. Make sure to setup a virtual environment before proceed with the exercises. See section below.
 
 If you would like to replicate the exercises on your own setup, do note that there are additional steps to set up AI Core, AI Launchpad and HANA Cloud. You can see the instructions below. Do note that you do not need to go through the following steps during the on-site session.
+
+## Setting up a Virtual Environment for the exercises
+
+Open the terminal in Visual Studio Code. 
+
+Run the following command to create the local environment.
+```
+Windows: py -m venv venv
+Mac: python3 -m venv venv
+```
+
+You should see that a `venv` folder is created in the root directory. 
+
+Run the following command to activate the local environment
+```
+Windows: venv\Scripts\activate
+Mac: source venv/bin/activate
+```
+
+Once the local environment is up, install the required libraries using the provided `requirements.txt` file.
+```
+pip install -r requirements.txt
+```
 
 ## Familiarise yourself with SAP generative AI hub
 
