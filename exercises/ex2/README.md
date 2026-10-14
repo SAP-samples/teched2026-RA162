@@ -41,6 +41,7 @@ Open the notebook and run its cells in order:
 5. Send context and test features to the SAP TabPFN deployment.
 6. Compare MAE, MAPE (%), and RMSE, then inspect the largest errors.
 7. Request 10th/50th/90th quantiles, plot central 80% predictive intervals, and visualize the full predictive distribution for one test home.
+8. Explain two individual house-price predictions with readable SHAP contribution charts; each cell sends all its perturbations in one batched request.
 
 All methods use the same labelled context and held-out rows. XGBoost's preprocessing is fitted only on context data; its 300-tree configuration is fixed rather than tuned on the test set. TabPFN receives the original feature values. The 2,048-row context is a workshop setting, not the model's maximum capacity. Requests follow the [SAP TabPFN-3.5 Plus documentation](https://help.sap.com/docs/sap-ai-core/generative-ai/tabpfn-3-5-plus).
 
@@ -86,6 +87,24 @@ Reference: Abdelhamid, Neda, Aladdin Ayesh, and Fadi Thabtah. “Phishing detect
 
 ## Instructor validation
 
-Run all notebook cells on a CPU worker with the SAP credentials configured. The inspection copy retains live outputs; the student notebook has cleared outputs.
+Run all notebook cells on a CPU worker with the SAP credentials configured. The notebook retains sample outputs, including tables and contribution charts from live validation of the two SHAP cells.
 
 Continue to [Exercise 3 — Tabular orchestration](../ex3/README.md).
+
+## Single-prediction SHAP
+
+`explain_sap_tabpfn` in `helpers.py` returns a SHAP explanation and request details.
+It supports one or several finite numeric regression rows, deduplicates all
+permutation queries, and sends exactly one mean-prediction request for the complete
+set. OAuth authentication is separate. `plot_shap_explanation` draws one row's
+waterfall, with contributions in thousands by default. The separate
+`plot_miami_shap_explanation` helper draws the Miami charts with explicit
+raises/lowers dollar labels and geographic comparisons against the same SHAP
+background homes. It only plots existing explanations and makes no requests.
+`shap==0.49.1` is pinned
+because the helper verifies and replays its fixed-budget query plan.
+
+The [SHAP benchmark](shap_benchmark/README.md) measures model-agnostic permutation
+SHAP for one Miami house through the SAP endpoint, with fixed context, batched
+perturbations, saved attributions, waterfall plots, and request-level timing.
+It distinguishes context size, SHAP background size, and permutation budget.

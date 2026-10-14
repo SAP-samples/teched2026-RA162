@@ -459,3 +459,297 @@ def predict_sap_tabpfn_classification(X_context, y_context, X_test, target_name,
             raise RuntimeError("SAP returned labels absent from the context.")
         predictions.append(values)
     return np.concatenate(predictions)
+
+
+class _BatchedShapPlan:
+    """Collect nonadaptive permutation queries, then replay their predictions."""
+
+    def __init__(self, X_query, background, n_permutations, random_state):
+        import shap
+
+        self.query = X_query
+        self.background = background
+        self.n_permutations = n_permutations
+        self.random_state = random_state
+        self.calls = []
+        self.shap = shap
+
+        def collect(values):
+            self.calls.append(np.asarray(values).copy())
+            return np.zeros(len(values))
+
+        self._explain(collect)
+        # Include original query rows explicitly for an independent additivity check.
+        self.rows = np.concatenate([*self.calls, X_query.to_numpy(dtype=float)])
+        self.unique_rows, self.inverse = np.unique(self.rows, axis=0, return_inverse=True)
+
+    def _explain(self, predict):
+        values, bases = [], []
+        state = np.random.get_state()
+        try:
+            for position in range(len(self.query)):
+                row = self.query.iloc[[position]]
+                masker = self.shap.maskers.Independent(
+                    self.background, max_samples=len(self.background))
+                varying = int((~masker.invariants(row.to_numpy()[0])).any(axis=0).sum())
+                explainer = self.shap.PermutationExplainer(predict, masker, seed=self.random_state)
+                result = explainer(row, max_evals=self.n_permutations * (2 * varying + 1),
+                                   batch_size=100000, silent=True)
+                values.append(result.values[0])
+                bases.append(result.base_values[0])
+        finally:
+            np.random.set_state(state)
+        return self.shap.Explanation(values=np.asarray(values), base_values=np.asarray(bases),
+                                     data=self.query.to_numpy(), feature_names=list(self.query.columns))
+
+    def reconstruct(self, predictions):
+        predictions = np.asarray(predictions, dtype=float)
+        if predictions.shape != (len(self.unique_rows),) or not np.isfinite(predictions).all():
+            raise ValueError("Need one finite prediction per unique SHAP query row.")
+        expanded = predictions[self.inverse]
+        call, offset = 0, 0
+
+        def replay(values):
+            nonlocal call, offset
+            if call >= len(self.calls) or not np.array_equal(values, self.calls[call]):
+                raise RuntimeError("SHAP replay changed its query plan; check the installed SHAP version.")
+            result = expanded[offset:offset + len(values)]
+            call += 1
+            offset += len(values)
+            return result
+
+        explanation = self._explain(replay)
+        if call != len(self.calls) or offset != len(expanded) - len(self.query):
+            raise RuntimeError("SHAP replay did not consume the complete prediction plan.")
+        return explanation, expanded[offset:]
+
+
+def explain_sap_tabpfn(X_context, y_context, X_query, target_name,
+                       background_size=32, n_permutations=32, random_state=42):
+    """Explain one or several numeric regression rows in ONE SAP prediction request.
+
+    Returns (shap.Explanation, details). The context stays fixed. Hidden features
+    are replaced by values from a reproducible context sample. All permutation
+    queries for ALL requested rows are deduplicated and sent together, using mean
+    output. OAuth authentication is separate from the single prediction request.
+
+    Requires finite numeric features and shap==0.49.1. The fixed-budget query plan
+    is independent of predictions; a verified replay preserves the estimator and
+    background weights. Each row uses the same seed, so explaining it alone uses
+    the same permutations. Attributions are approximate and not causal effects.
+    Large query plans are held in RAM; this helper raises rather than silently
+    splitting a plan exceeding the documented row/cell limits.
+    """
+    import time
+
+    tick = time.perf_counter()
+    if (not isinstance(background_size, int) or background_size < 1
+            or not isinstance(n_permutations, int) or n_permutations < 1):
+        raise ValueError("background_size and n_permutations must be positive integers.")
+    # Reuse the prediction payload's context, target and column validation.
+    build_payload(X_context, y_context, X_query.iloc[:1], target_name, random_state)
+    for name, frame in (("Context", X_context), ("Query", X_query)):
+        if not all(pd.api.types.is_numeric_dtype(dtype) for dtype in frame.dtypes):
+            raise ValueError(f"{name} SHAP features must be numeric; encode categories explicitly.")
+        if not np.isfinite(frame.to_numpy(dtype=float)).all():
+            raise ValueError(f"{name} SHAP features must be finite and nonmissing.")
+    background = X_context.sample(n=min(background_size, len(X_context)), random_state=random_state)
+    plan = _BatchedShapPlan(X_query.astype(float), background.astype(float),
+                            n_permutations, random_state)
+    query = pd.DataFrame(plan.unique_rows, columns=X_context.columns)
+    # SAP's mean-output limits are distinct from its 400-row full-output limit.
+    context_rows, columns, query_rows = len(X_context), len(X_context.columns), len(query)
+    row_limit = 250000 if context_rows == 1000000 else 1000000
+    cells = context_rows * (columns + 1) + query_rows * columns
+    if context_rows > 1000000 or columns > 2000 or query_rows > row_limit or cells > 200000000:
+        raise ValueError("SHAP plan exceeds SAP request limits; reduce rows, background or permutations.")
+    planning_seconds = time.perf_counter() - tick
+    request_tick = time.perf_counter()
+    batches = _predict_batches(X_context, y_context, query, target_name,
+                               batch_size=query_rows, random_state=random_state)
+    request_seconds = time.perf_counter() - request_tick
+    if len(batches) != 1:
+        raise RuntimeError("Expected exactly one batched SHAP prediction request.")
+    prediction = extract_predictions(batches[0][0], query_rows)
+    explanation, original_predictions = plan.reconstruct(prediction)
+    residual = explanation.base_values + explanation.values.sum(axis=1) - original_predictions
+    details = {"prediction_requests": 1, "explained_rows": len(X_query),
+               "background_rows": len(background), "n_permutations": n_permutations,
+               "planned_rows": len(plan.rows), "unique_query_rows": query_rows,
+               "planning_seconds": planning_seconds,
+               "request_seconds_including_auth": request_seconds,
+               "total_seconds": time.perf_counter() - tick,
+               "predictions": original_predictions, "additivity_residual": residual,
+               "source_indices": X_query.index.tolist()}
+    return explanation, details
+
+
+def plot_shap_explanation(explanation, row=0, actual=None, target_name="Sale price ($)", scale=1000):
+    """Waterfall of signed contributions, scaled for readable monetary labels."""
+    import matplotlib.pyplot as plt
+    from matplotlib.ticker import FuncFormatter, MaxNLocator
+    import shap
+
+    if not np.isfinite(scale) or scale <= 0:
+        raise ValueError("scale must be positive and finite.")
+    selected = explanation[row]
+    plotted = shap.Explanation(values=selected.values / scale,
+                               base_values=selected.base_values / scale,
+                               data=selected.data, feature_names=selected.feature_names)
+    shap.plots.waterfall(plotted, max_display=min(10, len(selected.feature_names)), show=False)
+    figure = plt.gcf()
+    figure.set_size_inches(11, figure.get_figheight())
+    ax = figure.axes[0]
+    ax.xaxis.set_major_locator(MaxNLocator(nbins=6))
+    ax.xaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{value:,.0f}"))
+    ax.set_xlabel(target_name if scale == 1 else f"{target_name} / {scale:,.0f}")
+    if actual is not None:
+        ax.axvline(float(actual) / scale, color="black", linestyle="--", linewidth=1.2,
+                   label=f"Actual: {actual:,.0f}")
+        ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.12))
+    plt.tight_layout()
+    return ax
+
+
+_SHAP_BLUE, _SHAP_RED, _SHAP_INK, _SHAP_MUTED = "#1674ad", "#c34d42", "#182d40", "#566879"
+_MIAMI_SHAP_NAMES = {
+    "LATITUDE": "North–south location (latitude)",
+    "LONGITUDE": "East–west location (longitude)",
+    "TOT_LVG_AREA": "Living area", "LND_SQFOOT": "Land area",
+    "SPEC_FEAT_VAL": "Assessed value of special features",
+    "OCEAN_DIST": "Distance to ocean", "WATER_DIST": "Distance to nearest water body",
+    "CNTR_DIST": "Distance to central Miami business district",
+    "SUBCNTR_DI": "Distance to nearest business subcenter",
+    "RAIL_DIST": "Distance to railway", "HWY_DIST": "Distance to highway",
+    "age": "Building age", "structure_quality": "Structure quality (dataset code)",
+    "avno60plus": "High aircraft-noise indicator", "month_sold": "Month sold",
+}
+
+
+def _shap_impact(value):
+    direction = "Raises" if value > 0 else "Lowers" if value < 0 else "No change:"
+    return f"{direction} ${abs(value) / 1000:,.1f}k"
+
+
+def _describe_miami_feature(name, value, reference):
+    """Separate physical feature values from model contribution direction."""
+    median = float(reference[name].median())
+    if name == "LATITUDE":
+        where = "north" if value > median else "south" if value < median else "at the latitude"
+        return f"{value:.3f}°N · {where} of reference median ({median:.3f}°N)"
+    if name == "LONGITUDE":
+        where = "east" if value > median else "west" if value < median else "at the longitude"
+        return f"{abs(value):.3f}°W · {where} of reference median ({abs(median):.3f}°W)"
+    if name.endswith("_DIST") or name == "SUBCNTR_DI":
+        where = "closer" if value < median else "farther" if value > median else "equal"
+        return f"{value:,.0f} ft · {where} than reference median ({median:,.0f} ft)" if where != "equal" else f"{value:,.0f} ft · at reference median"
+    if name in ("TOT_LVG_AREA", "LND_SQFOOT"):
+        return f"{value:,.0f} sq ft · reference median {median:,.0f} sq ft"
+    if name == "SPEC_FEAT_VAL":
+        return f"${value:,.0f} · reference median ${median:,.0f}"
+    if name == "age":
+        return f"{value:.0f} years · reference median {median:.0f} years"
+    if name == "avno60plus":
+        return "Yes" if value else "No"
+    if name == "month_sold":
+        import calendar
+        return calendar.month_name[int(value)]
+    return f"Code {value:g} · reference median code {median:g}"
+
+
+def _plot_readable_miami_shap(values, base, data, feature_names, reference, prediction,
+                       actual, row_position, source_row, limit=300):
+    """Plot one explanation in dollars; aggregate undisplayed features exactly."""
+    import matplotlib.pyplot as plt
+    from matplotlib.ticker import FuncFormatter, MaxNLocator
+    values = np.asarray(values, dtype=float)
+    names = list(feature_names)
+    if not np.isfinite(values).all() or not np.isfinite([base, prediction, actual, limit]).all() or limit <= 0:
+        raise ValueError("Expected finite SHAP values, prices, and a positive axis limit.")
+    order = np.argsort(-np.abs(values), kind="stable")
+    visible = set(order[:7]) | {names.index(n) for n in
+                              ("WATER_DIST", "LATITUDE", "LONGITUDE", "OCEAN_DIST")}
+    selected = [int(i) for i in order if i in visible]
+    rows = [(_MIAMI_SHAP_NAMES.get(names[i], names[i]), _describe_miami_feature(names[i], data[i], reference),
+             float(values[i])) for i in selected]
+    hidden = [i for i in range(len(names)) if i not in visible]
+    if hidden:
+        rows.append((f"Remaining {len(hidden)} features combined", "Net contribution of smaller effects",
+                     float(values[hidden].sum())))
+    assert np.isclose(sum(r[2] for r in rows), values.sum())
+    limit = max(limit, float(np.ceil(max(abs(r[2]) for r in rows) / 50000) * 50))
+    net = float(values.sum())
+    residual = float(base + net - prediction)
+
+    with plt.rc_context({"font.family": "DejaVu Sans", "font.size": 14, "text.parse_math": False,
+                         "text.color": _SHAP_INK, "axes.labelcolor": _SHAP_MUTED}):
+        fig = plt.figure(figsize=(16, 11.8), facecolor="white")
+        fig.text(.04, .957, f"Why is this home's predicted price ${prediction / 1000:,.1f}k?",
+                 fontsize=28, weight="bold")
+        fig.text(.04, .923, f"Miami-Dade · test position {row_position} · dataset row {source_row}",
+                 fontsize=15, color=_SHAP_MUTED)
+        for x, title, number in [(.04, "REFERENCE PREDICTION", f"${base / 1000:,.1f}k"),
+                                 (.34, "TOTAL FEATURE CONTRIBUTION", f"{'+' if net >= 0 else '−'}${abs(net) / 1000:,.1f}k"),
+                                 (.68, "PREDICTED PRICE", f"${prediction / 1000:,.1f}k")]:
+            fig.text(x, .877, title, fontsize=13, color=_SHAP_MUTED, weight="bold")
+            fig.text(x, .837, number, fontsize=31, weight="bold",
+                     color=(_SHAP_RED if net > 0 else _SHAP_BLUE) if x == .34 else _SHAP_INK)
+        fig.text(.287, .837, "+", fontsize=28, color=_SHAP_MUTED)
+        fig.text(.625, .837, "≈", fontsize=28, color=_SHAP_MUTED)
+        fig.text(.87, .844, f"Actual sale\n${actual / 1000:,.1f}k", fontsize=15, color=_SHAP_MUTED)
+
+        ax = fig.add_axes([.455, .14, .335, .60])
+        ax.set_ylim(len(rows) - .5, -.5)
+        ax.set_xlim(-limit, limit)
+        ax.axvspan(-limit, 0, color=_SHAP_BLUE, alpha=.045)
+        ax.axvspan(0, limit, color=_SHAP_RED, alpha=.045)
+        ax.axvline(0, color="#8293a1", linewidth=1)
+        ax.xaxis.set_major_locator(MaxNLocator(nbins=5))
+        ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: "0" if v == 0 else f"{'−' if v < 0 else '+'}${abs(v):,.0f}k"))
+        ax.tick_params(axis="x", colors=_SHAP_MUTED, labelsize=13)
+        ax.set_yticks([])
+        ax.set_xlabel("Contribution to predicted price (US dollars)", labelpad=12, fontsize=14)
+        for spine in ax.spines.values():
+            spine.set_visible(False)
+        fig.text(.04, .772, "FEATURE + THIS HOME'S VALUE", weight="bold", fontsize=13, color=_SHAP_MUTED)
+        fig.text(.455, .772, "← LOWERS PRICE", weight="bold", fontsize=14, color=_SHAP_BLUE)
+        fig.text(.79, .772, "RAISES PRICE →", weight="bold", fontsize=14, color=_SHAP_RED, ha="right")
+        fig.text(.82, .772, "MODEL CONTRIBUTION", weight="bold", fontsize=13, color=_SHAP_MUTED)
+        for y, (label, detail, value) in enumerate(rows):
+            color = _SHAP_RED if value > 0 else _SHAP_BLUE
+            ax.barh(y, value / 1000, height=.39, color=color, zorder=3)
+            fy = .14 + .60 * (1 - (y + .5) / len(rows))
+            fig.text(.04, fy + .010, label, fontsize=15, weight="bold", va="center")
+            fig.text(.04, fy - .015, detail, fontsize=13, color=_SHAP_MUTED, va="center")
+            fig.text(.82, fy, _shap_impact(value), fontsize=15, weight="bold", color=color, va="center")
+
+        water = names.index("WATER_DIST")
+        latitude = names.index("LATITUDE")
+        fig.text(.04, .032, f"For this home: water distance {_shap_impact(values[water]).lower()}; latitude {_shap_impact(values[latitude]).lower()}.",
+                 fontsize=17, weight="bold")
+        return fig, {"row_position": row_position, "source_row": source_row,
+                     "reference_prediction": float(base), "prediction": float(prediction),
+                     "actual": float(actual), "net_contribution": net,
+                     "additivity_residual_dollars": residual,
+                     "rows": [{"feature": a, "context": b, "contribution": c} for a, b, c in rows]}
+
+
+
+def plot_miami_shap_explanation(explanation, background, *, prediction, actual,
+                                row=0, row_position=None, source_row=None, limit=300):
+    """Readable Miami house-price SHAP chart; returns a Matplotlib figure.
+
+    Pass the exact background sample used by explain_sap_tabpfn, so geographic
+    and distance comparisons describe the same reference homes. Contributions
+    and prices are supplied in dollars; limit is in thousands of dollars and
+    expands when needed. This function only plots; it makes no model requests.
+    Feature definitions: https://github.com/ModelOriented/shapviz/blob/main/R/data.R
+    Use plot_shap_explanation for other datasets/targets.
+    """
+    selected = explanation[row]
+    fig, _ = _plot_readable_miami_shap(
+        selected.values, float(selected.base_values), selected.data,
+        selected.feature_names, background, prediction, actual,
+        row_position, source_row, limit,
+    )
+    return fig
