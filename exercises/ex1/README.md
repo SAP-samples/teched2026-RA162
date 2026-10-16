@@ -1,8 +1,8 @@
 # Exercise 1
 
-In this exercise, we will create run SAP-RPT-1.6 with some sample data. You will learn to process tabular data from [used_car_sales](used_car_sales.csv) and to use the RPT API to prexict the price of a car. 
+In this exercise, we will create run SAP-RPT-1.6 with some sample data. You will learn to process tabular data from [used_car_sales CSV file](used_cars_24.csv) and to use the SAP-RPT-1.6 API to predict the price of a car. 
 
-### sample data
+### Sample data
 
 | Car Brand | Model               | Price  | Model Year | Location  | Fuel   | Driven (Kms) | Gear      | Ownership | EMI (monthly)  |
 |-----------|---------------------|--------|------------|-----------|--------|--------------|-----------|-----------|----------------|
@@ -26,8 +26,8 @@ AICORE_CLIENT_ID
 AICORE_CLIENT_SECRET
 
 BASE_DEPLOYMENT_URL
-RPT1.6_DEPLOYMENT_ID
+RPT_DEPLOYMENT_ID
 ```
 
-Once you have all creditals set up, you can start in the [Jupyter Notebook part (1)](RPT_notebook_TechEd2026_part1_prediction.ipynb) which focusses on the core functionalities of the RPT model. Afterwards, you may start the [Jupyter Notebook party (2)](RPT_notebook_TechEd2026_part2_explainability.ipynb) which focusses on the explanibility feature.
+Once you have all the credentials set up, you can start in [Jupyter Notebook part (1)](RPT_notebook_TechEd2026_part1_prediction.ipynb) which focuses on the core functionalities of the SAP-RPT-1.6 model. Afterwards, you may continue on to [Jupyter Notebook part (2)](RPT_notebook_TechEd2026_part2_explainability.ipynb) which focusses on the explanibility feature.
 
