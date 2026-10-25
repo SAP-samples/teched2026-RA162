@@ -29,15 +29,12 @@ For the Hands-on session, we have designed the exercise with the provided AI Cor
 
 Provide the exercise content here directly in README.md using [markdown](https://guides.github.com/features/mastering-markdown/) and linking to the specific exercise pages, below is an example.
 
-- [Getting Started](exercises/ex0/)
-- [Exercise 1 - SAP-RPT](exercises/ex1/)
-- [Exercise 2 - TabPFN](exercises/ex2/)
-    - [Exercise 2.1 - Predict Miami house prices](exercises/ex2#exercise-21---predict-miami-house-prices)
-    - [Exercise 2.2 - Try your own dataset](exercises/ex2#exercise-22---try-your-own-dataset)
-- [Exercise 3 - Tabular Orchestration](exercises/ex3/)
-    - [Exercise 3.1 - Set up your data destination](exercises/ex3#exercise-31-sub-exercise-1-description)
-    - [Exercise 3.2 - Set up the configuration for Tabular Orchestration](exercises/ex2#exercise-32-sub-exercise-3-description)
-    - [Exercise 3.3 - Get model predictions with Tabular Orchestration](exercises/ex2#exercise-32-sub-exercise-3-description)
+- [Getting Started](exercises/ex0/README.md)
+- [Exercise 1 - SAP-RPT](exercises/ex1/README.md)
+- [Exercise 2 - TabPFN](exercises/ex2/README.md)
+    - [Exercise 2.1 - Predict Miami house prices](exercises/ex2/README.md#exercise-21---predict-miami-house-prices)
+    - [Exercise 2.2 - Try your own dataset](exercises/ex2/README.md#exercise-22---try-your-own-dataset)
+- [Exercise 3 - Tabular Orchestration](exercises/ex3/README.md)
   
 **IMPORTANT**
 

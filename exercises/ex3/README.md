@@ -1,6 +1,6 @@
 # Exercise 3 - Tabular AI Orchestration
 
-In this exercise, you will learn how to set up the Tabular AI orchestration workflow to run predictions with the SAP-RPT-1.6 model at scale. We will be reusing the same dataset from Exercise 1. 
+In this exercise, you will use the provided Python notebook to learn how to set up the Tabular AI orchestration workflow to run predictions with the SAP-RPT-1.6 model at scale. We will be reusing the same dataset from Exercise 1. 
 
 Tabular AI Orchestration has three components:
 
