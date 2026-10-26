@@ -34,16 +34,18 @@ pip install -r requirements.txt
 
 ## Preparing the .env file
 
-You should see a `.env.example` file. Rename the file to `.env` and open this file. You would see that we have already prepared some environment variables in the file:
+You should see a `.env.example` file in the `exercises` folder. Rename the file to `.env` and open this file. You would see that we have already prepared some environment variables in the file:
 ```
 AICORE_AUTH_URL=<url in RA162-SK.json file>/oauth/token
 AICORE_CLIENT_ID=<clientid in RA162-SK.json file>
 AICORE_CLIENT_SECRET=<clientsecret in RA162-SK.json file>
 AICORE_RESOURCE_GROUP=default
 AICORE_BASE_URL=<AI_API_URL in RA162-SK.json file>
-RPT_DEPLOYMENT_ID=YOUR_SAP_RPT_1.6_DEPLOYMENT_ID
-TABPFN_DEPLOYMENT_ID=YOUR_TABPFN_3_5_PLUS_DEPLOYMENT_ID
-TABORC_DEPLOYMENT_ID=YOUR_TAB_ORCHESTRATION_DEPLOYMENT_ID
+BASE_DEPLOYMENT_URL=<AI_API_URL in RA162-SK.json file>/v2/inference/deployments
+RPT_DEPLOYMENT_ID=<sap-rpt-1.6 in RA162-SK.json file>
+RPT_LARGE_DEPLOYMENT_ID=<sap-rpt-1.6-large in RA162-SK.json file>
+TABPFN_DEPLOYMENT_ID=<tabpfn-3.5-plus in RA162-SK.json file>
+TABORC_DEPLOYMENT_ID=<tabular-orchestration in RA162-SK.json file>
 TABORC_HDLFS_HOST=<hdlfs-host in RA162-SK.json file>
 TABORC_HDLFS_URL=<hdlfs-url in RA162-SK.json file>
 ```
