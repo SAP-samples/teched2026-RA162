@@ -17,7 +17,7 @@ This repository contains the material for the SAP TechEd 2026 session called RA1
 
 ## Overview
 
-This session introduces attendees to Tabular AI capabilities, comprising of our tabular foundation models and Tabular AI orchestration. Tabular foundation models include SAP-RPT-1.6 (the latest from our SAP-RPT model family) as well as TabPFN-3.5 (the latest from the TabPFN model family). 
+This session introduces attendees to Tabular AI capabilities, comprising of our tabular foundation models and Tabular AI orchestration. Tabular foundation models include SAP-RPT-1.6 (the latest from our SAP-RPT model family) as well as TabPFN-3.5 Plus (the latest from the TabPFN model family). 
 
 Through each exercise, attendees will get hands-on to learn more about our state-of-the-art tabular foundation models as well as to get a feel of how to operate these models at scale via Tabular AI orchestration.
 
@@ -27,15 +27,22 @@ For the Hands-on session, we have designed the exercise with the provided AI Cor
 
 ## Exercises
 
-Provide the exercise content here directly in README.md using [markdown](https://guides.github.com/features/mastering-markdown/) and linking to the specific exercise pages, below is an example.
-
 - [Getting Started](exercises/ex0/README.md)
 - [Exercise 1 - SAP-RPT](exercises/ex1/README.md)
 - [Exercise 2 - TabPFN](exercises/ex2/README.md)
     - [Exercise 2.1 - Predict Miami house prices](exercises/ex2/README.md#exercise-21---predict-miami-house-prices)
     - [Exercise 2.2 - Try your own dataset](exercises/ex2/README.md#exercise-22---try-your-own-dataset)
 - [Exercise 3 - Tabular Orchestration](exercises/ex3/README.md)
-  
+
+## Setup
+
+You should have the latest Visual Studio Code and Python installed on your device. 
+
+1. Download this repository as a ZIP file. Unzip the file.
+2. Open Visual Studio Code.
+3. Click **File** and click **Open Folder**. Select the extracted repository folder.
+4. You should see that the folder is now opened on Visual Studio Code and the explorer should show the folder directory map.
+
 **IMPORTANT**
 
 Your repo must contain the .reuse and LICENSES folder and the License section below. DO NOT REMOVE the section or folders/files. Also, remove all unused template assets(images, folders, etc) from the exercises folder. 
