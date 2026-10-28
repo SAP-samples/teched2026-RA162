@@ -8,6 +8,13 @@ Before starting on the exercises, you should first set up a virtual environment.
 
 You can follow the setup steps below.
 
+## Prepare Credentials
+You should see the `credentials.zip` file in the `exercises` folders.
+
+Unzip it with the provided password. You should see the `.env` file, a client certificate and a client key. The `.env` file contains all the credentials required for the exercises and the client certificate and key are used for uploading the dataset to HANA Data Lake Files System. 
+
+> **IMPORTANT**: Do not modify anything within the `credentials` folder. 
+
 ## Setting up a Virtual Environment for the exercises
 
 Open the terminal in Visual Studio Code. 
@@ -31,24 +38,6 @@ Once the virtual environment is up, install the required libraries using the pro
 cd exercises
 pip install -r requirements.txt
 ```
-
-## Preparing the .env file
-
-You should see a `.env.example` file. Rename the file to `.env` and open this file. You would see that we have already prepared some environment variables in the file:
-```
-AICORE_AUTH_URL=<url in RA162-SK.json file>/oauth/token
-AICORE_CLIENT_ID=<clientid in RA162-SK.json file>
-AICORE_CLIENT_SECRET=<clientsecret in RA162-SK.json file>
-AICORE_RESOURCE_GROUP=default
-AICORE_BASE_URL=<AI_API_URL in RA162-SK.json file>
-RPT_DEPLOYMENT_ID=YOUR_SAP_RPT_1.6_DEPLOYMENT_ID
-TABPFN_DEPLOYMENT_ID=YOUR_TABPFN_3_5_PLUS_DEPLOYMENT_ID
-TABORC_DEPLOYMENT_ID=YOUR_TAB_ORCHESTRATION_DEPLOYMENT_ID
-TABORC_HDLFS_HOST=<hdlfs-host in RA162-SK.json file>
-TABORC_HDLFS_URL=<hdlfs-url in RA162-SK.json file>
-```
-
-Unzip `credentials.zip` file and open the `RA162-SK.json` file. Copy the required values from this JSON file into your `.env` file.
 
 ## Conclusion
 Now, you should be ready to proceed to [Exercise 1 - SAP-RPT-1.6](../ex1/README.md) to get started with our exercises. 
