@@ -17,17 +17,17 @@ This repository contains the material for the SAP TechEd 2026 session called RA1
 
 ## Overview
 
-This session introduces attendees to Tabular AI capabilities, comprising of our tabular foundation models and Tabular AI orchestration. Tabular foundation models include SAP-RPT-1.6 (the latest from our SAP-RPT model family) as well as TabPFN-3.5 (the latest from the TabPFN model family). 
+This session introduces attendees to Tabular AI capabilities, comprising of our tabular foundation models and Tabular AI orchestration. Tabular foundation models include SAP-RPT-1.6 (the latest from our SAP-RPT model family) as well as TabPFN-3.5 Plus (the latest from the TabPFN model family). 
 
 Through each exercise, attendees will get hands-on to learn more about our state-of-the-art tabular foundation models as well as to get a feel of how to operate these models at scale via Tabular AI orchestration.
 
 ## Requirements
 
-For the Hands-on session, we have designed the exercise with the provided AI Core instance and technical user. If you would like to repeat this tutorial, you will require your own AI Core instance (and AI Launchpad). For Exercise 3, you will require your own HANA Data Lake File System or S3 storage. 
+For the Hands-on session, we have designed the exercise with the provided AI Core instance and technical user. 
+
+> If you would like to repeat this tutorial, you will require your own AI Core instance (and AI Launchpad). For Exercise 3, you will require your own HANA Data Lake File System or S3 storage. We have provided a `.env.example` file and you can populate it with the deployment IDs and credentials within the AI Core service key in your own setup.
 
 ## Exercises
-
-Provide the exercise content here directly in README.md using [markdown](https://guides.github.com/features/mastering-markdown/) and linking to the specific exercise pages, below is an example.
 
 - [Getting Started](exercises/ex0/README.md)
 - [Exercise 1 - SAP-RPT](exercises/ex1/README.md)
@@ -35,7 +35,16 @@ Provide the exercise content here directly in README.md using [markdown](https:/
     - [Exercise 2.1 - Predict Miami house prices](exercises/ex2/README.md#exercise-21---predict-miami-house-prices)
     - [Exercise 2.2 - Try your own dataset](exercises/ex2/README.md#exercise-22---try-your-own-dataset)
 - [Exercise 3 - Tabular Orchestration](exercises/ex3/README.md)
-  
+
+## Setup
+
+You should have the latest Visual Studio Code and Python installed on your device. 
+
+1. Download this repository as a ZIP file. Unzip the file.
+2. Open Visual Studio Code.
+3. Click **File** and click **Open Folder**. Select the extracted repository folder.
+4. You should see that the folder is now opened on Visual Studio Code and the explorer should show the folder directory map.
+
 **IMPORTANT**
 
 Your repo must contain the .reuse and LICENSES folder and the License section below. DO NOT REMOVE the section or folders/files. Also, remove all unused template assets(images, folders, etc) from the exercises folder. 
@@ -51,4 +60,4 @@ Please read the [SAP Open Source Code of Conduct](https://github.com/SAP-samples
 Support for the content in this repository is available during the actual time of the online session for which this content has been designed. Otherwise, you may request support via the [Issues](../../issues) tab.
 
 ## License
-Copyright (20xx-)20xx SAP SE or an SAP affiliate company and <your-project> contributors. Please see our [LICENSE](LICENSE) for copyright and license information. Detailed information including third-party components and their licensing/copyright information is available [via the REUSE tool](https://api.reuse.software/info/github.com/SAP/<your-project>).
+Copyright 2026 SAP SE or an SAP affiliate company and contributors. Please see our [LICENSE](LICENSE) for copyright and license information. Detailed information including third-party components and their licensing/copyright information is available [via the REUSE tool](https://api.reuse.software/info/github.com/SAP/teched2026-ra162).

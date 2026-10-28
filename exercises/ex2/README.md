@@ -2,33 +2,13 @@
 
 Predict Miami house prices with TabPFN-3.5 Plus through SAP AI Core, compare with a naïve median and XGBoost, then repeat with your own CSV. The [notebook](TabPFN_notebook_TechEd2026.ipynb) keeps the workflow concise; request handling and baseline implementations live in [helpers.py](helpers.py).
 
-## Requirements
+## Setup
 
-- Python 3.10 or later and JupyterLab.
-- Internet access for the first dataset download and SAP requests.
-- SAP AI Core OAuth credentials and a **running TabPFN-3.5 Plus deployment**, as described in [Exercise 0](../ex0/README.md).
+The same `.env` file within the `credentials` folder contains all the required credentials for this exercise. 
 
-From this repository's root:
+The helper combines the base URL with the deployment ID. The notebook uses SAP authentication; it does not require a Prior Labs API token or a local GPU. You can run data preparation and the baselines without SAP credentials.
 
-```bash
-cd exercises/ex2
-python -m pip install -r ../requirements.txt
-cp .env.example .env
-jupyter lab TabPFN_notebook_TechEd2026.ipynb
-```
-
-Fill in `.env` before running the SAP prediction cell:
-
-```dotenv
-AICORE_AUTH_URL=https://YOUR_AUTH_HOST/oauth/token
-AICORE_CLIENT_ID=YOUR_CLIENT_ID
-AICORE_CLIENT_SECRET=YOUR_CLIENT_SECRET
-AICORE_RESOURCE_GROUP=default
-BASE_DEPLOYMENT_URL=https://YOUR_AI_CORE_HOST/v2/inference/deployments
-TABPFN_DEPLOYMENT_ID=YOUR_TABPFN_3_5_PLUS_DEPLOYMENT_ID
-```
-
-Use the resource group containing your deployment. The helper combines the base URL with the deployment ID. Keep credentials in `.env`, which is ignored by Git. The notebook uses SAP authentication; it does not require a Prior Labs API token or a local GPU. You can run data preparation and the baselines without SAP credentials.
+Open the [Python notebook](../ex2/TabPFN_notebook_TechEd2026.ipynb) in the `ex2` folder to get started.
 
 ## Exercise 2.1 - Predict Miami house prices
 
@@ -89,22 +69,12 @@ Reference: Abdelhamid, Neda, Aladdin Ayesh, and Fadi Thabtah. “Phishing detect
 
 Run all notebook cells on a CPU worker with the SAP credentials configured. The notebook retains sample outputs, including tables and contribution charts from live validation of the two SHAP cells.
 
-Continue to [Exercise 3 — Tabular orchestration](../ex3/README.md).
-
 ## Single-prediction SHAP
 
-`explain_sap_tabpfn` in `helpers.py` returns a SHAP explanation and request details.
-It supports one or several finite numeric regression rows, deduplicates all
-permutation queries, and sends exactly one mean-prediction request for the complete
-set. OAuth authentication is separate. `plot_shap_explanation` draws one row's
-waterfall, with contributions in thousands by default. The separate
-`plot_miami_shap_explanation` helper draws the Miami charts with explicit
-raises/lowers dollar labels and geographic comparisons against the same SHAP
-background homes. It only plots existing explanations and makes no requests.
-`shap==0.49.1` is pinned
-because the helper verifies and replays its fixed-budget query plan.
+`explain_sap_tabpfn` in `helpers.py` returns a SHAP explanation and request details. It supports one or several finite numeric regression rows, deduplicates all permutation queries, and sends exactly one mean-prediction request for the complete set. OAuth authentication is separate. `plot_shap_explanation` draws one row's waterfall, with contributions in thousands by default. The separate `plot_miami_shap_explanation` helper draws the Miami charts with explicit raises/lowers dollar labels and geographic comparisons against the same SHAP background homes. It only plots existing explanations and makes no requests. `shap==0.49.1` is pinned because the helper verifies and replays its fixed-budget query plan.
 
-The [SHAP benchmark](shap_benchmark/README.md) measures model-agnostic permutation
-SHAP for one Miami house through the SAP endpoint, with fixed context, batched
-perturbations, saved attributions, waterfall plots, and request-level timing.
-It distinguishes context size, SHAP background size, and permutation budget.
+The [SHAP benchmark](shap_benchmark/README.md) measures model-agnostic permutation SHAP for one Miami house through the SAP endpoint, with fixed context, batched perturbations, saved attributions, waterfall plots, and request-level timing. It distinguishes context size, SHAP background size, and permutation budget.
+
+## Summary
+
+Once you are completed the exercises in parts 1 and 2, you can head to [Exercise 3 — Tabular orchestration](../ex3/README.md).
