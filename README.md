@@ -23,7 +23,9 @@ Through each exercise, attendees will get hands-on to learn more about our state
 
 ## Requirements
 
-For the Hands-on session, we have designed the exercise with the provided AI Core instance and technical user. If you would like to repeat this tutorial, you will require your own AI Core instance (and AI Launchpad). For Exercise 3, you will require your own HANA Data Lake File System or S3 storage. 
+For the Hands-on session, we have designed the exercise with the provided AI Core instance and technical user. 
+
+> If you would like to repeat this tutorial, you will require your own AI Core instance (and AI Launchpad). For Exercise 3, you will require your own HANA Data Lake File System or S3 storage. We have provided a `.env.example` file and you can populate it with the deployment IDs and credentials within the AI Core service key in your own setup.
 
 ## Exercises
 
