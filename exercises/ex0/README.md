@@ -11,7 +11,9 @@ You can follow the setup steps below.
 ## Prepare Credentials
 You should see the `credentials.zip` file in the `exercises` folders.
 
-Unzip it with the provided password and you should see the `.env` file. It contains all the credentials required for the exercises. 
+Unzip it with the provided password. You should see the `.env` file, a client certificate and a client key. The `.env` file contains all the credentials required for the exercises and the client certificate and key are used for uploading the dataset to HANA Data Lake Files System. 
+
+> **IMPORTANT**: Do not modify anything within the `credentials` folder. 
 
 ## Setting up a Virtual Environment for the exercises
 
