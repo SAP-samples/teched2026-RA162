@@ -16,14 +16,14 @@ Open the notebook and run its cells in order:
 
 1. Download the Miami housing dataset automatically on first use; subsequent runs use the local `miami_housing.csv` cache.
 2. Choose `SALE_PRC`, the sale price in US dollars, as the target. The dataset contains 13,776 rows and 15 input features; its parcel identifier has already been removed.
-3. Hold out 20% of rows with seed 42 and select 2,048 context rows from training data.
+3. Hold out 20% of rows with seed 42 and use up to `MAX_CONTEXT_ROWS = 1_000_000` training rows as context (all of them for this dataset).
 4. Fit the median and XGBoost baselines on that same context.
 5. Send context and test features to the SAP TabPFN deployment.
 6. Compare MAE, MAPE (%), and RMSE, then inspect the largest errors.
 7. Request 10th/50th/90th quantiles, plot central 80% predictive intervals, and visualize the full predictive distribution for one test home.
 8. Explain two individual house-price predictions with readable SHAP contribution charts; each cell sends all its perturbations in one batched request.
 
-All methods use the same labelled context and held-out rows. XGBoost's preprocessing is fitted only on context data; its 300-tree configuration is fixed rather than tuned on the test set. TabPFN receives the original feature values. The 2,048-row context is a workshop setting, not the model's maximum capacity. Requests follow the [SAP TabPFN-3.5 Plus documentation](https://help.sap.com/docs/sap-ai-core/generative-ai/tabpfn-3-5-plus).
+All methods use the same labelled context and held-out rows. XGBoost's preprocessing is fitted only on context data; its 300-tree configuration is fixed rather than tuned on the test set. TabPFN receives the original feature values. The 1,000,000-row cap matches the SAP TabPFN-3.5 Plus context limit and applies to both the regression and classification sections. Requests follow the [SAP TabPFN-3.5 Plus documentation](https://help.sap.com/docs/sap-ai-core/generative-ai/tabpfn-3-5-plus).
 
 MAE and RMSE are in US dollars; MAPE is displayed as a percentage. Zero targets are excluded from MAPE, which is undefined if every target is zero. Predictive intervals describe model uncertainty and do not guarantee empirical coverage. The full-output plot displays probability mass per bin and zooms to the central 99% of mass to keep extreme tail boundaries from hiding the distribution.
 
