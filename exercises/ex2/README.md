@@ -12,7 +12,7 @@ From this repository's root:
 
 ```bash
 cd exercises/ex2
-python -m pip install -r requirements.txt
+python -m pip install -r ../requirements.txt
 cp .env.example .env
 jupyter lab TabPFN_notebook_TechEd2026.ipynb
 ```
