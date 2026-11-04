@@ -1,3 +1,5 @@
+[![REUSE status](https://api.reuse.software/badge/github.com/SAP-samples/teched2026-RA162)](https://api.reuse.software/info/github.com/SAP-samples/teched2026-RA162)
+
 # Containing Files
 
 1. The LICENSE file:
